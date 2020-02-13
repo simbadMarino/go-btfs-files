@@ -105,6 +105,9 @@ func (it *serialIterator) Err() error {
 	return it.err
 }
 
+func (it *serialIterator) SetReedSolomon() {
+}
+
 func (it *serialIterator) AbsRootPath() (string, error) {
 	return "", nil
 }

@@ -48,6 +48,9 @@ func (it *sliceIterator) AbsRootPath() (string, error) {
 	return "", nil
 }
 
+func (it *sliceIterator) SetReedSolomon() {
+}
+
 // SliceFile implements Node, and provides simple directory handling.
 // It contains children files, and is created from a `[]Node`.
 // SliceFiles are always directories, and can't be read from or closed.

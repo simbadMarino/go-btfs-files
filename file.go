@@ -60,6 +60,9 @@ type DirIterator interface {
 
 	// AbsRootPath returns the absolute path of the root directory.
 	AbsRootPath() (string, error)
+
+	// SetReedSolomon sets the flag to indicate this Directory is used for Reed-solomon
+	SetReedSolomon()
 }
 
 // Directory is a special file which can link to any number of files.
