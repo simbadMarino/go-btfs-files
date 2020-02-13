@@ -163,10 +163,11 @@ func makeRelative(child, parent string) string {
 type multipartIterator struct {
 	f *multipartDirectory
 
-	curFile     Node
-	curName     string
-	err         error
-	absRootPath string
+	curFile        Node
+	curName        string
+	err            error
+	absRootPath    string
+	forReedSolomon bool
 }
 
 func (it *multipartIterator) Name() string {
@@ -219,11 +220,12 @@ func (it *multipartIterator) Next() bool {
 		// Finally, advance to the next file.
 		it.curFile, it.err = it.f.walker.nextFile()
 
-		//
-		if it.absRootPath == "" && it.f.walker.currAbsPath != "" && it.f.path != "/" {
-			var err error
-			if it.absRootPath, err = getAbsRootPath(it.f.walker.currAbsPath, it.f.path); err != nil {
-				it.err = err
+		if it.forReedSolomon {
+			if it.absRootPath == "" && it.f.walker.currAbsPath != "" && it.f.path != "/" {
+				var err error
+				if it.absRootPath, err = getAbsRootPath(it.f.walker.currAbsPath, it.f.path); err != nil {
+					it.err = err
+				}
 			}
 		}
 
@@ -249,6 +251,9 @@ func (it *multipartIterator) Err() error {
 }
 
 func (it *multipartIterator) AbsRootPath() (string, error) {
+	if !it.forReedSolomon {
+		return "", errors.New("Not supported for non-Reed-Solomon directory")
+	}
 	first := true
 	for {
 		more := it.Next()
@@ -265,8 +270,12 @@ func (it *multipartIterator) AbsRootPath() (string, error) {
 	}
 }
 
+func (it *multipartIterator) SetReedSolomon() {
+	it.forReedSolomon = true
+}
+
 func (f *multipartDirectory) Entries() DirIterator {
-	return &multipartIterator{f: f}
+	return &multipartIterator{f: f, forReedSolomon: false}
 }
 
 func (f *multipartDirectory) Close() error {
