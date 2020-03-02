@@ -58,9 +58,6 @@ type DirIterator interface {
 	// return nil
 	Err() error
 
-	// AbsRootPath returns the absolute path of the root directory.
-	AbsRootPath() (string, error)
-
 	// SetReedSolomon sets the flag to indicate this Directory is used for Reed-solomon
 	SetReedSolomon()
 }
@@ -86,6 +83,8 @@ type Directory interface {
 	// Note that you can't store the result of it.Node() and use it after
 	// advancing the iterator
 	Entries() DirIterator
+
+	SetSize(int64) error
 }
 
 // FileInfo exposes information on files in local filesystem

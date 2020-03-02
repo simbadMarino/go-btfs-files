@@ -1,8 +1,6 @@
 package files
 
 import (
-	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"mime"
@@ -31,6 +29,7 @@ type multipartDirectory struct {
 
 	// part is the part describing the directory. It's nil when implicit.
 	part *multipart.Part
+	size int64
 }
 
 type multipartWalker struct {
@@ -73,6 +72,14 @@ func NewFileFromPartReader(reader *multipart.Reader, mediatype string) (Director
 			reader: reader,
 		},
 	}, nil
+}
+
+func IsMultiPartDirectory(d Directory) bool {
+	if _, ok := d.(*multipartDirectory); ok {
+		return true
+	} else {
+		return false
+	}
 }
 
 func (w *multipartWalker) nextFile() (Node, error) {
@@ -220,25 +227,8 @@ func (it *multipartIterator) Next() bool {
 		// Finally, advance to the next file.
 		it.curFile, it.err = it.f.walker.nextFile()
 
-		if it.forReedSolomon {
-			if it.absRootPath == "" && it.f.walker.currAbsPath != "" && it.f.path != "/" {
-				var err error
-				if it.absRootPath, err = getAbsRootPath(it.f.walker.currAbsPath, it.f.path); err != nil {
-					it.err = err
-				}
-			}
-		}
-
 		return it.err == nil
 	}
-}
-
-func getAbsRootPath(partPath string, dirPath string) (string, error) {
-	strs := strings.Split(partPath, dirPath)
-	if len(strs) <= 1 {
-		return "", fmt.Errorf("can not find dir path [%s] from part path [%s] ", partPath, dirPath)
-	}
-	return strs[0] + dirPath, nil
 }
 
 func (it *multipartIterator) Err() error {
@@ -248,26 +238,6 @@ func (it *multipartIterator) Err() error {
 		return nil
 	}
 	return it.err
-}
-
-func (it *multipartIterator) AbsRootPath() (string, error) {
-	if !it.forReedSolomon {
-		return "", errors.New("Not supported for non-Reed-Solomon directory")
-	}
-	first := true
-	for {
-		more := it.Next()
-		if !more {
-			if first {
-				return "", nil
-			}
-			return "", errors.New("could not find any absolue root path. Possibly no file inside the directory")
-		}
-		first = false
-		if it.absRootPath != "" {
-			return it.absRootPath, nil
-		}
-	}
 }
 
 func (it *multipartIterator) SetReedSolomon() {
@@ -286,7 +256,20 @@ func (f *multipartDirectory) Close() error {
 }
 
 func (f *multipartDirectory) Size() (int64, error) {
-	return 0, ErrNotSupported
+	return f.size, nil
+}
+
+func (f *multipartDirectory) SetSize(size int64) error {
+	f.size = size
+	return nil
+}
+
+func MultiPartReader(d Directory) *multipart.Reader {
+	md, ok := d.(*multipartDirectory)
+	if !ok {
+		return nil
+	}
+	return md.walker.reader
 }
 
 var _ Directory = &multipartDirectory{}
