@@ -18,6 +18,7 @@ type serialFile struct {
 	files             []os.FileInfo
 	stat              os.FileInfo
 	handleHiddenFiles bool
+	size              int64
 }
 
 type serialIterator struct {
@@ -47,7 +48,7 @@ func NewSerialFile(path string, hidden bool, stat os.FileInfo) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &serialFile{path, contents, stat, hidden}, nil
+		return &serialFile{path, contents, stat, hidden, 0}, nil
 	case mode&os.ModeSymlink != 0:
 		target, err := os.Readlink(path)
 		if err != nil {
@@ -108,15 +109,19 @@ func (it *serialIterator) Err() error {
 func (it *serialIterator) SetReedSolomon() {
 }
 
-func (it *serialIterator) AbsRootPath() (string, error) {
-	return "", nil
-}
-
 func (f *serialFile) Entries() DirIterator {
 	return &serialIterator{
 		path:              f.path,
 		files:             f.files,
 		handleHiddenFiles: f.handleHiddenFiles,
+	}
+}
+
+func IsSerialFileDirectory(d Directory) bool {
+	if _, ok := d.(*serialFile); ok {
+		return true
+	} else {
+		return false
 	}
 }
 
@@ -179,6 +184,11 @@ func (f *serialFile) Size() (int64, error) {
 	})
 
 	return du, err
+}
+
+func (f *serialFile) SetSize(size int64) error {
+	f.size = size
+	return nil
 }
 
 var _ Directory = &serialFile{}

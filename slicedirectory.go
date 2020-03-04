@@ -1,6 +1,9 @@
 package files
 
-import "sort"
+import (
+	"errors"
+	"sort"
+)
 
 type fileEntry struct {
 	name string
@@ -42,10 +45,6 @@ func (it *sliceIterator) Next() bool {
 
 func (it *sliceIterator) Err() error {
 	return nil
-}
-
-func (it *sliceIterator) AbsRootPath() (string, error) {
-	return "", nil
 }
 
 func (it *sliceIterator) SetReedSolomon() {
@@ -98,6 +97,18 @@ func (f *SliceFile) Size() (int64, error) {
 	}
 
 	return size, nil
+}
+
+func (f *SliceFile) SetSize(size int64) error {
+	return errors.New("not supported")
+}
+
+func IsMapDirectory(d Directory) bool {
+	if _, ok := d.(*SliceFile); ok {
+		return true
+	} else {
+		return false
+	}
 }
 
 var _ Directory = &SliceFile{}
