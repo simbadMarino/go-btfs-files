@@ -57,9 +57,6 @@ type DirIterator interface {
 	// If previous call to Next() returned `true`, Err() is guaranteed to
 	// return nil
 	Err() error
-
-	// SetReedSolomon sets the flag to indicate this Directory is used for Reed-solomon
-	SetReedSolomon()
 }
 
 // Directory is a special file which can link to any number of files.
@@ -85,6 +82,8 @@ type Directory interface {
 	Entries() DirIterator
 
 	SetSize(int64) error
+
+	IsReedSolomon() bool
 }
 
 // FileInfo exposes information on files in local filesystem

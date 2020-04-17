@@ -170,11 +170,10 @@ func makeRelative(child, parent string) string {
 type multipartIterator struct {
 	f *multipartDirectory
 
-	curFile        Node
-	curName        string
-	err            error
-	absRootPath    string
-	forReedSolomon bool
+	curFile     Node
+	curName     string
+	err         error
+	absRootPath string
 }
 
 func (it *multipartIterator) Name() string {
@@ -240,12 +239,8 @@ func (it *multipartIterator) Err() error {
 	return it.err
 }
 
-func (it *multipartIterator) SetReedSolomon() {
-	it.forReedSolomon = true
-}
-
 func (f *multipartDirectory) Entries() DirIterator {
-	return &multipartIterator{f: f, forReedSolomon: false}
+	return &multipartIterator{f: f}
 }
 
 func (f *multipartDirectory) Close() error {
@@ -262,6 +257,10 @@ func (f *multipartDirectory) Size() (int64, error) {
 func (f *multipartDirectory) SetSize(size int64) error {
 	f.size = size
 	return nil
+}
+
+func (f *multipartDirectory) IsReedSolomon() bool {
+	return false
 }
 
 func MultiPartReader(d Directory) *multipart.Reader {

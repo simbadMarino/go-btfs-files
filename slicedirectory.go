@@ -103,6 +103,10 @@ func (f *SliceFile) SetSize(size int64) error {
 	return errors.New("not supported")
 }
 
+func (f *SliceFile) IsReedSolomon() bool {
+	return false
+}
+
 func IsMapDirectory(d Directory) bool {
 	if _, ok := d.(*SliceFile); ok {
 		return true
