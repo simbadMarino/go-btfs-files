@@ -57,6 +57,10 @@ type DirIterator interface {
 	// If previous call to Next() returned `true`, Err() is guaranteed to
 	// return nil
 	Err() error
+
+	// BreadthFirstTraversal indicates that the current DirIterator
+	// instance will be used to traverse in breadth first walk9ng method
+	BreadthFirstTraversal()
 }
 
 // Directory is a special file which can link to any number of files.

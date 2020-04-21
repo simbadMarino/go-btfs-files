@@ -50,6 +50,9 @@ func (it *sliceIterator) Err() error {
 func (it *sliceIterator) SetReedSolomon() {
 }
 
+func (it *sliceIterator) BreadthFirstTraversal() {
+}
+
 // SliceFile implements Node, and provides simple directory handling.
 // It contains children files, and is created from a `[]Node`.
 // SliceFiles are always directories, and can't be read from or closed.

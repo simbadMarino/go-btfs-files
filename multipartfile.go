@@ -239,6 +239,9 @@ func (it *multipartIterator) Err() error {
 	return it.err
 }
 
+func (it *multipartIterator) BreadthFirstTraversal() {
+}
+
 func (f *multipartDirectory) Entries() DirIterator {
 	return &multipartIterator{f: f}
 }

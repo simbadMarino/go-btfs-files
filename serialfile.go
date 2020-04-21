@@ -106,6 +106,9 @@ func (it *serialIterator) Err() error {
 	return it.err
 }
 
+func (it *serialIterator) BreadthFirstTraversal() {
+}
+
 func (f *serialFile) Entries() DirIterator {
 	return &serialIterator{
 		path:              f.path,
