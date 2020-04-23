@@ -106,7 +106,7 @@ func (it *serialIterator) Err() error {
 	return it.err
 }
 
-func (it *serialIterator) SetReedSolomon() {
+func (it *serialIterator) BreadthFirstTraversal() {
 }
 
 func (f *serialFile) Entries() DirIterator {
@@ -189,6 +189,10 @@ func (f *serialFile) Size() (int64, error) {
 func (f *serialFile) SetSize(size int64) error {
 	f.size = size
 	return nil
+}
+
+func (f *serialFile) IsReedSolomon() bool {
+	return false
 }
 
 var _ Directory = &serialFile{}

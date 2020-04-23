@@ -47,7 +47,7 @@ func (it *sliceIterator) Err() error {
 	return nil
 }
 
-func (it *sliceIterator) SetReedSolomon() {
+func (it *sliceIterator) BreadthFirstTraversal() {
 }
 
 // SliceFile implements Node, and provides simple directory handling.
@@ -101,6 +101,10 @@ func (f *SliceFile) Size() (int64, error) {
 
 func (f *SliceFile) SetSize(size int64) error {
 	return errors.New("not supported")
+}
+
+func (f *SliceFile) IsReedSolomon() bool {
+	return false
 }
 
 func IsMapDirectory(d Directory) bool {
