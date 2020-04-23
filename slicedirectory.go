@@ -47,9 +47,6 @@ func (it *sliceIterator) Err() error {
 	return nil
 }
 
-func (it *sliceIterator) SetReedSolomon() {
-}
-
 func (it *sliceIterator) BreadthFirstTraversal() {
 }
 
