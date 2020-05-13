@@ -57,7 +57,7 @@ func NewSerialFileWithFilter(path string, filter *Filter, stat os.FileInfo) (Nod
 		if err != nil {
 			return nil, err
 		}
-		return &serialFile{path, contents, stat, hidden, 0}, nil
+		return &serialFile{path, contents, stat, filter, 0}, nil
 	case mode&os.ModeSymlink != 0:
 		target, err := os.Readlink(path)
 		if err != nil {
@@ -131,36 +131,6 @@ func IsSerialFileDirectory(d Directory) bool {
 		return true
 	} else {
 		return false
-	}
-}
-
-func (f *serialFile) NextFile() (string, Node, error) {
-	// if there aren't any files left in the root directory, we're done
-	if len(f.files) == 0 {
-		return "", nil, io.EOF
-	}
-
-	stat := f.files[0]
-	f.files = f.files[1:]
-
-	for !f.handleHiddenFiles && strings.HasPrefix(stat.Name(), ".") {
-		if len(f.files) == 0 {
-			return "", nil, io.EOF
-		}
-
-		stat = f.files[0]
-		f.files = f.files[1:]
-	}
-
-	// open the next file
-	filePath := filepath.ToSlash(filepath.Join(f.path, stat.Name()))
-
-	// recursively call the constructor on the next file
-	// if it's a regular file, we will open it as a ReaderFile
-	// if it's a directory, files in it will be opened serially
-	sf, err := NewSerialFile(filePath, f.handleHiddenFiles, stat)
-	if err != nil {
-		return "", nil, err
 	}
 }
 
