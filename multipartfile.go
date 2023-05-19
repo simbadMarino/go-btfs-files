@@ -2,7 +2,6 @@ package files
 
 import (
 	"io"
-	"io/ioutil"
 	"mime"
 	"mime/multipart"
 	"net/url"
@@ -106,7 +105,7 @@ func (w *multipartWalker) nextFile() (Node, error) {
 			walker: w,
 		}, nil
 	case applicationSymlink:
-		out, err := ioutil.ReadAll(part)
+		out, err := io.ReadAll(part)
 		if err != nil {
 			return nil, err
 		}
@@ -138,7 +137,12 @@ func (w *multipartWalker) nextFile() (Node, error) {
 
 // fileName returns a normalized filename from a part.
 func fileName(part *multipart.Part) string {
-	filename := part.FileName()
+	v := part.Header.Get("Content-Disposition")
+	_, params, err := mime.ParseMediaType(v)
+	if err != nil {
+		return ""
+	}
+	filename := params["filename"]
 	if escaped, err := url.QueryUnescape(filename); err == nil {
 		filename = escaped
 	} // if there is a unescape error, just treat the name as unescaped
