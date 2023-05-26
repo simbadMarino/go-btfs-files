@@ -1,4 +1,4 @@
-module github.com/TRON-US/go-btfs-files
+module github.com/bittorrent/go-btfs-files
 
 require (
 	github.com/crackcomm/go-gitignore v0.0.0-20170627025303-887ab5e44cc3
