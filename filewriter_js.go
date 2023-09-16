@@ -5,7 +5,6 @@ package files
 import (
 	"os"
 	"strings"
-	"syscall"
 )
 
 var invalidChars = `/` + "\x00"
